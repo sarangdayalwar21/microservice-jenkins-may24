@@ -1,0 +1,77 @@
+pipeline {
+    agent any  // This means the pipeline will run on any available agent
+
+    environment {
+        IMAGE_NAME = 'wishlist-python-app'  // Docker image name
+        IMAGE_TAG = 'latest'  // Docker image tag
+    }
+
+    stages {
+
+        // Stage 1: Git Checkout
+        stage('Git Checkout') {
+            steps {
+                // Checkout the code from the specified Git repository
+                checkout scmGit(
+                    branches: [[name: '*/main']],  // Branch name
+                    extensions: [],  // You can add any git extensions here (e.g., clean before checkout)
+                    userRemoteConfigs: [[
+                        url: 'https://github.com/sarangdayalwar21/microservice-jenkins-may24.git',  // Your GitHub repository URL
+                        credentialsId: 'doc'  // Jenkins credentials for GitHub access
+                    ]]
+                )
+            }
+        }
+
+        // Stage 2: Install Dependencies
+        stage('Install Dependencies') {
+            steps {
+                dir('wishlist-microservice-python') {
+                    // Install the Python dependencies
+                    sh 'pip install -r requirements.txt'
+                }
+            }
+        }
+
+        // Stage 3: Docker Build
+        stage('Docker Build') {
+            steps {
+                dir('wishlist-microservice-python') {
+                    // Build the Docker image for the Python project
+                    sh 'docker build -t ${IMAGE_NAME}:${IMAGE_TAG} .'
+                }
+            }
+        }
+
+        // Stage 4: Docker Push
+        stage('Docker Push') {
+            steps {
+                // Login to Docker Hub using Jenkins credentials
+                withCredentials([string(credentialsId: 'verma00', variable: 'DOCKER_PASSWORD')]) {
+                    // Docker login
+                    sh 'docker login -u verma00 -p ${DOCKER_PASSWORD}'
+                    
+                    // Tag the Docker image
+                    sh 'docker tag ${IMAGE_NAME}:${IMAGE_TAG} verma00/devops1:${IMAGE_TAG}'
+                    
+                    // Push the image to Docker Hub
+                    sh 'docker push verma00/devops1:${IMAGE_TAG}'
+                    
+                    // Logout from Docker Hub
+                    sh 'docker logout'
+                }
+            }
+        }
+
+    }
+
+    post {
+        success {
+            echo "Pipeline completed successfully!"
+        }
+        failure {
+            echo "Pipeline failed. Please check the logs."
+        }
+    }
+}
+
