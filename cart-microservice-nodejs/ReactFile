@@ -1,1 +1,71 @@
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Git Checkout') {
+            steps {
+                checkout scmGit(
+                    branches: [[name: '*/main']],
+                    userRemoteConfigs: [[url: 'https://github.com/sarangdayalwar21/microservice-jenkins-may24.git']]
+                )
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                dir('cart-microservice-react') {
+                    sh 'npm install'
+                }
+            }
+        }
+
+        stage('React Build') {
+            steps {
+                dir('cart-microservice-react') {
+                    // builds production static files into /build folder
+                    sh 'npm run build'
+                }
+            }
+        }
+
+        stage('Docker Build') {
+            steps {
+                dir('cart-microservice-react') {
+                    sh 'docker build -t react-app .'
+                }
+            }
+        }
+
+        stage('Docker Push') {
+            steps {
+                withCredentials([string(credentialsId: 'dockerhub-pass', variable: 'DOCKER_PASS')]) {
+                    sh 'docker login -u sarang8390 -p ${DOCKER_PASS}'
+                    sh 'docker tag react-app sarang8390/react-app:latest'
+                    sh 'docker push sarang8390/react-app:latest'
+                    sh 'docker logout'
+                }
+            }
+        }
+
+        stage('Approval') {
+            steps {
+                input message: 'Deploy to production?'
+            }
+        }
+
+        stage('Deployment') {
+            steps {
+                // default React NGINX container serves on port 80
+                sh 'docker run -d -p 3000:80 sarang8390/react-app:latest'
+            }
+        }
+    }
+
+    post {
+        failure {
+            echo "Pipeline failed!"
+        }
+    }
+}
 
