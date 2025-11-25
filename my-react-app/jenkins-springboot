@@ -1,0 +1,70 @@
+pipeline {
+    agent any
+    tools {
+        maven "mvn"
+    }
+    stages {
+    
+            stage('Git Checkout') {
+             steps {
+            checkout scmGit(branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/sumeetverma07/microservice-jenkins-may24.git']])                
+                }
+            }
+
+        stage('Build') {
+            
+            steps {
+                dir('shoes-microservice-spring-boot') {
+                    sh 'mvn clean install'
+                }
+            
+            }
+        }
+
+        stage('Docker Build') {
+            steps {
+                dir('shoes-microservice-spring-boot') {
+                    sh 'docker build -t java .' 
+                 }
+                    
+            
+            }
+        }
+
+        stage('DOCKER PUSH ') {
+            steps {
+            withCredentials([string(credentialsId: 'verma00', variable: 'new')]) {
+            sh 'docker login -u verma00 -p ${new}'
+            sh 'docker tag java verma00/spring:latest '
+            sh 'docker push verma00/spring:latest'
+            sh 'docker logout'
+                }
+            }
+        }
+
+
+        stage('Approval') {
+            steps {
+                input 'Approval for production'
+            }
+        } 
+
+        stage('Deployment') {
+            steps {
+                sh 'docker run -d  verma00/devops1:latest'
+            }
+
+            post {
+               
+                failure{
+                    echo 'failure'
+                    mail bcc: '', body: 'hii project is failed', cc: '', from: '', replyTo: '', subject: 'project for node', to: 'vermasumeet391@gmail.com'
+                }
+                
+                }
+            }
+        }
+
+       
+    }
+

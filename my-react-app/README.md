@@ -1,40 +1,56 @@
 <<<<<<< HEAD
-<<<<<<< HEAD
 # microservices-architect-config-starter
 Microservices Architecture Configuration Starter Sample
-=======
-# cart-microservice-nodejs
-Cart Microservice is a Node.js app with cart data.
-Nodejs Server is configured as Eureka Client to access Eureka Server with name - cart-client
-
-## Build Instruction
-```
-npm install
-node index.js
-
-```
-
-*App runs on port **1004***
->>>>>>> e4ef019 (Added my-react-app)
 
 
-> Access the app from endpoint:
 
-```
-API endpoint:  http://localhost:1004/api/v1/
-Method: GET
-Response:
-{"data":[{"itemNo":1,"item":"Nike Shoe"},{"itemNo":2,"item":"Tommy Hilfiger Shirt"},{"itemNo":3,"item":"Calvin Klien Trousers"}]}
-```
+
+Architecture of sample multiple microservices developed in different technologies - Spring Boot, Node.js, Python, React.js in a project.
+Microservices connected by an API Gateway using Netflix Zuul and Netflix Eureka.
+
+
+## Application Architecture
+
+The application consists of 7 different Microservices
+
+-   [shoes-microservice-spring-boot](https://github.com/sarat9/microservices-architect-config-starter/tree/main/shoes-microservice-spring-boot)  - Spring Boot App with Shoe data
+-   [offers-microservice-spring-boot](https://github.com/sarat9/microservices-architect-config-starter/tree/main/offers-microservice-spring-boot)  - Spring Boot App with Offers data
+-   [cart-microservice-nodejs](https://github.com/sarat9/microservices-architect-config-starter/tree/main/cart-microservice-nodejs)  - Node.js App with Cart data
+-   [wishlist-microservice-python](https://github.com/sarat9/microservices-architect-config-starter/tree/main/wishlist-microservice-python)  - Python App with Wishlist data
+-   [zuul-api-gateway](https://github.com/sarat9/microservices-architect-config-starter/tree/main/zuul-api-gateway)  - API gateway that proxies all the micro-services with Neflix Zuul
+-   [eureka-discovery-server](https://github.com/sarat9/microservices-architect-config-starter/tree/main/eureka-discovery-server)  - Service Registration and Discovery Server with Netflix Eureka
+-   [ui-web-app-reactjs](https://github.com/sarat9/microservices-architect-config-starter/tree/main/ui-web-app-reactjs)  - Single Page Application that provides the UI
+
+
+*Optional* - [config-server-spring-boot](https://github.com/sarat9/config-server-spring-boot) repo has a config server service, you can chose to connect them if you want. It is different repository. 
+
 
 ##
 
-> Reference and src:
-> 
->https://itnext.io/how-to-use-netflixs-eureka-and-spring-cloud-for-service-registry-8b43c8acdf4e
+
+![MicroService Architeture ](https://miro.medium.com/max/1050/1*kSLJKEl3X-gKNTpO1l7SQg.png)# Microservices Architecture Sample!
+
+#
+#
+
+# Microservices
+Crafting Microservices now become an industry standard for any new API development, and almost all the organizations are promoting it.
+Microservices are Decentralized, Independent and  Loosely coupled.
+Before we go into why we need microservices. Lets understand the problems of our traditional monolitic approach.
+
+## Problems of Monolithic
+Problems of Monolithic:
+
+- Large monolithic code base makes complicated to understand and maintain as it grows.
+- Scaling become challenging - As everything is packaged in one EAR/WAR, Scaling such a monolithic application can only be accomplished by deploying the same EAR/WAR packages in more servers — also known as horizontal scaling. Each copy of the application in various servers will utilize the same amount of underlying resources, which is often not an efficient way to design.
+- Tightly coupled
+- Extremely difficult to change technology or language or framework (hybrid technologies) because everything is tightly coupled and depend up on each other.
+- Non ability to change tech stack will affect business badly and make it lose lot of modern tech solutions.
+- Refactoring code base is difficult
+- No fault isolation - If any single function fails, the entire application goes down.
+- If a particular function consumes more memory, entire application feels the pain.
 
 
-<<<<<<< HEAD
 ## Why go for Microservices?
 - A microservices architecture takes single responsibility principle approach.
 - Microservices are small, independent, and loosely coupled.
@@ -145,5 +161,3 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
 >>>>>>> 74bc090 (initial react project)
-=======
->>>>>>> e4ef019 (Added my-react-app)

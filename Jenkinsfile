@@ -1,0 +1,60 @@
+pipeline {
+    agent any
+
+    stages {
+
+        stage('Git Checkout') {
+            steps {
+                checkout scmGit(
+                    branches: [[name: '*/main']],
+                    userRemoteConfigs: [[url: 'https://github.com/sarangdayalwar21/microservice-jenkins-may24.git']]
+                )
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                dir('cart-microservice-nodejs') {
+                    sh 'npm install'
+                }
+            }
+        }
+
+        stage('Docker Build') {
+            steps {
+                dir('cart-microservice-nodejs') {
+                    sh 'docker build -t node-app .'
+                }
+            }
+        }
+
+        stage('Docker Push') {
+            steps {
+                withCredentials([string(credentialsId: 'dockerhub-pass', variable: 'DOCKER_PASS')]) {
+                    sh 'docker login -u sarang8390 -p ${DOCKER_PASS}'
+                    sh 'docker tag node-app sarang8390/node-app:latest'
+                    sh 'docker push sarang8390/node-app:latest'
+                    sh 'docker logout'
+                }
+            }
+        }
+
+        stage('Approval') {
+            steps {
+                input message: 'Deploy to production?'
+            }
+        }
+
+        stage('Deployment') {
+            steps {
+                sh 'docker run -d -p 3000:3000 sarang8390/node-app:latest'
+            }
+        }
+    }
+
+    post {
+        failure {
+            echo "Pipeline failed!"
+        }
+    }
+}
