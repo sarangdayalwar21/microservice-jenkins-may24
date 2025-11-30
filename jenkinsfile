@@ -1,4 +1,5 @@
 pipeline {
+<<<<<<< HEAD
     agent any  // This means the pipeline will run on any available agent
 
     environment {
@@ -29,10 +30,33 @@ pipeline {
                 dir('wishlist-microservice-python') {
                     // Install the Python dependencies
                     sh 'pip install -r requirements.txt'
+=======
+    agent any
+
+    environment {
+        // Change these to your Docker Hub (or registry) username / repo
+        REGISTRY_URL = ''                // leave empty for Docker Hub
+        REGISTRY_CREDENTIALS = 'dockerhub-creds'  // ID of Jenkins credentials
+        IMAGE_NAME = 'yourdockerhubusername/microservice-jenkins-may24'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    dockerImage = docker.build("${IMAGE_NAME}:${env.BUILD_NUMBER}")
+>>>>>>> ef6b3ac (python_project)
                 }
             }
         }
 
+<<<<<<< HEAD
         // Stage 3: Docker Build
         stage('Docker Build') {
             steps {
@@ -75,3 +99,34 @@ pipeline {
     }
 }
 
+=======
+        stage('Test (optional)') {
+            steps {
+                // If you have tests, you can run them in the container
+                // For example: docker run --rm IMAGE pytest
+                echo "Skipping tests — or run your test command here"
+            }
+        }
+
+        stage('Push to Registry') {
+            when {
+                expression { return env.REGISTRY_CREDENTIALS != '' }
+            }
+            steps {
+                script {
+                    docker.withRegistry(REGISTRY_URL, REGISTRY_CREDENTIALS) {
+                        dockerImage.push("${env.BUILD_NUMBER}")
+                        dockerImage.push("latest")
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            cleanWs()
+        }
+    }
+}
+>>>>>>> ef6b3ac (python_project)
